@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 210 100% 20%; /* CORE Blue */
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 44 87% 50%; /* CORE Gold */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --chart-1: 199 89% 48%;  /* Vibrant Blue */
+    --chart-2: 346 87% 61%;  /* Soft Pink/Red */
+    --chart-3: 162 59% 41%;  /* Emerald Green */
+    --chart-4: 38 92% 50%;   /* Golden Amber */
+    --chart-5: 262 83% 58%;  /* Deep Purple */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold tracking-tight;
+  }
+}
+
+/* Custom Utilities for CORE */
+.text-core-blue { color: #003366; }
+.bg-core-blue { background-color: #003366; }
+.text-core-gold { color: #DAA520; }
+.bg-core-gold { background-color: #DAA520; }

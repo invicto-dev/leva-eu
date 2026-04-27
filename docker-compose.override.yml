@@ -1,0 +1,23 @@
+services:
+  api:
+    user: root
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./packages/db:/app/packages/db
+    command: /bin/sh -c "DATABASE_URL=postgresql://${DB_USER:-admin}:${DB_PASSWORD:-admin_password}@postgres:5432/${DB_NAME:-core_db}?schema=public pnpm run dev"
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-admin}:${DB_PASSWORD:-admin_password}@postgres:5432/${DB_NAME:-core_db}?schema=public
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_PUBLIC_URL: ${MINIO_PUBLIC_URL:-http://localhost:9000}
+      STORAGE_ACCESS_KEY: ${STORAGE_ACCESS_KEY:-admin}
+      STORAGE_SECRET_KEY: ${STORAGE_SECRET_KEY:-admin_password}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-core-bucket}
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      target: installer
+    command: pnpm turbo run dev --filter=web -- --host
+    ports:
+      - "5173:5173"

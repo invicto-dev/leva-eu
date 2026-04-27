@@ -1,0 +1,90 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: core_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin_password}
+      POSTGRES_DB: ${DB_NAME:-core_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - core_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin} -d ${DB_NAME:-core_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    container_name: core_minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY:-admin}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY:-admin_password}
+    command: server /data --console-address ":9001"
+    volumes:
+      - core_minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    image: minio/mc
+    container_name: core_minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${STORAGE_ACCESS_KEY:-admin} ${STORAGE_SECRET_KEY:-admin_password};
+      /usr/bin/mc mb myminio/${STORAGE_BUCKET:-core-bucket} || true;
+      /usr/bin/mc anonymous set public myminio/${STORAGE_BUCKET:-core-bucket};
+      exit 0;
+      "
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: core_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-admin}:${DB_PASSWORD:-admin_password}@postgres:5432/${DB_NAME:-core_db}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_PUBLIC_URL: /storage
+      STORAGE_ACCESS_KEY: ${STORAGE_ACCESS_KEY:-admin}
+      STORAGE_SECRET_KEY: ${STORAGE_SECRET_KEY:-admin_password}
+      STORAGE_BUCKET: ${STORAGE_BUCKET:-core-bucket}
+    restart: always
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${API_URL:-/api/v1}
+    container_name: core_web
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    restart: always
+
+volumes:
+  core_postgres_data:
+  core_minio_data:

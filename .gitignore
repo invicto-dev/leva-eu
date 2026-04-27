@@ -1,0 +1,47 @@
+# --- DEPENDENCIES ---
+node_modules
+.pnpm-debug.log*
+
+# --- BUILD ARTIFACTS ---
+dist
+build
+.turbo
+*.tsbuildinfo
+.next
+out
+
+# --- PRISMA ---
+# Ignora o client gerado, mas mantém o esquema e migrações
+generated
+# Se usar SQLite local para testes (opcional)
+*.db
+*.db-journal
+
+# --- ENVIRONMENT / SECRETS ---
+# Ignora QUALQUER variação de arquivo de ambiente por segurança
+.env
+.env.*
+!.env.example
+
+# --- IDEs / EDITORS ---
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- SYSTEM FILES ---
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# --- TESTING ---
+coverage
+*.lcov
