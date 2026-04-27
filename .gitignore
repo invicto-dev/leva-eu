@@ -45,3 +45,6 @@ desktop.ini
 # --- TESTING ---
 coverage
 *.lcov
+
+# --- WHATSAPP ---
+.wwebjs_auth

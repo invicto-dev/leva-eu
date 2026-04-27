@@ -159,7 +159,10 @@ export class WhatsappService implements OnApplicationBootstrap {
       case 'CONFIRMING':
         if (text === 'sim') {
           if (customer.state && customer.state.tempData) {
-            const { origin, destination } = customer.state.tempData as { origin: string; destination: string };
+            const { origin, destination } = customer.state.tempData as {
+              origin: string;
+              destination: string;
+            };
             await this.ridesService.createRide({
               customerId: customer.id,
               origin,
@@ -191,7 +194,10 @@ export class WhatsappService implements OnApplicationBootstrap {
   ) {
     await this.prisma.conversationState.upsert({
       where: { customerId },
-      update: { step: step as never, tempData: tempData ? (tempData as Record<string, unknown>) : undefined },
+      update: {
+        step: step as never,
+        tempData: tempData ? (tempData as Record<string, unknown>) : undefined,
+      },
       create: {
         customerId,
         step: step as never,
