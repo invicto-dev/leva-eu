@@ -5,7 +5,7 @@ import {
   IsEnum,
   IsString,
 } from 'class-validator';
-import { Role } from '@core/db';
+import { Role } from '@leva-eu/db';
 
 export class CreateUserDto {
   @IsEmail({}, { message: 'Invalid email' })

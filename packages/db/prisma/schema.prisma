@@ -102,3 +102,18 @@ model SystemSetting {
 
   @@map("system_settings")
 }
+
+enum MessageType {
+  RECEIVED
+  SENT
+}
+
+model MessageLog {
+  id        String      @id @default(uuid())
+  phone     String
+  body      String
+  type      MessageType
+  createdAt DateTime    @default(now())
+
+  @@map("message_logs")
+}
