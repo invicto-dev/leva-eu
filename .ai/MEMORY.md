@@ -1,17 +1,17 @@
 # 🧠 Memória do Projeto
 
 ## 🎯 Objetivo Atual
-- Refatoração do Core-Base para nível de produção (Escalabilidade e Qualidade).
+- Desenvolvimento do projeto "Leva Eu" (Corridas via WhatsApp).
 
 ## 🛠️ Últimas Decisões e Ações
-1. **Refatoração .ai/:** Arquivos README, PROJECT, ARCHITECTURE e CONVENTIONS otimizados para eficiência de tokens e precisão.
-2. **Git Init:** Repositório inicializado e branch `feat/core-enhancements-planning` criada.
-3. **Plano Aprovado:** Foco em Infraestrutura de Qualidade, Backend NestJS robusto e Arquitetura Frontend por Features.
+1. **Bootstrap Leva Eu:** Projeto inicializado usando a Project Machine (`leva-eu`, `@leva-eu`).
+2. **Modelagem DB:** Implementados modelos `Driver`, `Customer`, `Ride` e `ConversationState` no Prisma.
+3. **WhatsApp API:** Integrado `whatsapp-web.js` com uma State Machine funcional para o fluxo de solicitação de corridas.
+4. **Mobile App:** Criado `apps/driver-app` com Vite + Capacitor para Android.
 
 ## 📝 Próximos Passos Imediatos
-- [x] Configurar Project Machine (`init-project.mts`) para bootstrap de novos projetos.
-- [ ] Implementar Global Filters/Interceptors no NestJS.
-- [ ] Configurar Vitest (Testes).
+- [ ] Implementar UI de Login e Listagem de Corridas no `driver-app`.
+- [ ] Criar Painel Admin para gestão de motoristas.
 
 ## ⚠️ Débitos Técnicos e Riscos
 - Necessário instalar dependências de desenvolvimento para Husky/Commitlint.

@@ -10,24 +10,95 @@ datasource db {
 
 enum Role {
   ADMIN
+  DRIVER
+  CUSTOMER
 }
 
 model User {
   id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
+  email     String?  @unique
+  phone     String?  @unique
+  password  String?
   name      String
   role      Role     @default(ADMIN)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  driver    Driver?
+  customer  Customer?
+
   @@map("users")
 }
 
+model Driver {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  vehicle   String
+  plate     String
+  isOnline  Boolean  @default(false)
+  rides     Ride[]
+
+  @@map("drivers")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  phone     String   @unique
+  rides     Ride[]
+  state     ConversationState?
+
+  @@map("customers")
+}
+
+enum RideStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Ride {
+  id          String     @id @default(uuid())
+  origin      String
+  destination String
+  status      RideStatus @default(PENDING)
+  price       Decimal?   @db.Decimal(10, 2)
+  driverId    String?
+  driver      Driver?    @relation(fields: [driverId], references: [id])
+  customerId  String
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("rides")
+}
+
+enum ConversationStep {
+  IDLE
+  ASKING_ORIGIN
+  ASKING_DESTINATION
+  CONFIRMING
+}
+
+model ConversationState {
+  id         String           @id @default(uuid())
+  customerId String           @unique
+  customer   Customer         @relation(fields: [customerId], references: [id])
+  step       ConversationStep @default(IDLE)
+  tempData   Json? // Stores current origin/destination during the flow
+  updatedAt  DateTime         @updatedAt
+
+  @@map("conversation_states")
+}
+
 model SystemSetting {
-  id                 String   @id @default(uuid())
-  logoUrl            String?
-  updatedAt          DateTime @updatedAt
+  id        String   @id @default(uuid())
+  logoUrl   String?
+  updatedAt DateTime @updatedAt
 
   @@map("system_settings")
 }
