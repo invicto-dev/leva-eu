@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN pnpm add -g turbo
 COPY . .
-RUN turbo prune web --docker
+RUN turbo prune leva-eu-web --docker
 
 # Stage 2: Installing dependencies
 FROM base AS installer
@@ -27,7 +27,7 @@ COPY turbo.json turbo.json
 # Build the Web app
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
-RUN pnpm turbo run build --filter=web
+RUN pnpm turbo run build --filter=leva-eu-web
 
 # Stage 4: Production runner (Nginx)
 FROM nginx:stable-alpine AS runner

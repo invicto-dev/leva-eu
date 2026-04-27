@@ -9,7 +9,11 @@ export class WhatsappTestController {
   async simulateMessage(@Body() data: { from: string; body: string }) {
     // 1. Log the incoming message (Audit)
     // Accessing private method for testing purposes or using a public logger
-    await (this.whatsappService as any).logMessage(data.from, data.body, 'RECEIVED');
+    await (this.whatsappService as any).logMessage(
+      data.from,
+      data.body,
+      'RECEIVED',
+    );
 
     // 2. Mock WhatsApp message object
     const mockMsg = {

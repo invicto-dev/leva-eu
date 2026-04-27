@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 RUN pnpm add -g turbo
 COPY . .
-RUN turbo prune api --docker
+RUN turbo prune leva-eu-api --docker
 
 # Stage 2: Installing dependencies
 FROM base AS installer
@@ -25,7 +25,7 @@ COPY --from=pruner /app/out/full/ .
 COPY turbo.json turbo.json
 
 # Generate Prisma Client
-RUN pnpm turbo run db:generate --filter=api...
+RUN pnpm turbo run db:generate --filter=leva-eu-api...
 
 # Build the API
 WORKDIR /app/apps/api
