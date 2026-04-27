@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, CardContent, Badge } from '@leva-eu/ui';
 import { Car, LogOut, MapPin, Navigation, User as UserIcon, RefreshCw } from 'lucide-react';
@@ -14,6 +14,7 @@ interface Ride {
       name: string;
     };
   };
+  price: string;
   createdAt: string;
 }
 
@@ -23,7 +24,7 @@ export default function HomePage() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('@LevaEu:user') || '{}') as { name?: string };
 
-  const fetchRides = async () => {
+  const fetchRides = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get('/rides/pending');
@@ -33,16 +34,26 @@ export default function HomePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const init = async () => {
+      try {
+        const activeRes = await api.get('/rides/active');
+        if (activeRes.data.data) {
+          navigate('/active-ride');
+          return;
+        }
+      } catch (err) {
+        console.error('Erro ao verificar corrida ativa:', err);
+      }
+      
       await fetchRides();
     };
     init();
-    const interval = setInterval(fetchRides, 10000); // Atualiza a cada 10s
+    const interval = setInterval(fetchRides, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate, fetchRides]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -52,8 +63,7 @@ export default function HomePage() {
   const handleAcceptRide = async (rideId: string) => {
     try {
       await api.post(`/rides/${rideId}/accept`);
-      fetchRides();
-      // Em produção, navegaria para a tela de corrida ativa
+      navigate('/active-ride');
     } catch {
       alert('Erro ao aceitar corrida.');
     }
@@ -145,6 +155,11 @@ export default function HomePage() {
                           <p className="text-sm font-medium leading-tight">{ride.destination}</p>
                         </div>
                       </div>
+                    </div>
+
+                    <div className="pt-4 border-t flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground font-medium">Ganhos estimado</span>
+                      <span className="text-xl font-black text-primary">R$ {Number(ride.price).toFixed(2)}</span>
                     </div>
                   </div>
 

@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RidesService } from './rides.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { RidesController } from './rides.controller';
+import { WhatsappModule } from '../whatsapp/whatsapp.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, forwardRef(() => WhatsappModule)],
   controllers: [RidesController],
   providers: [RidesService],
   exports: [RidesService],

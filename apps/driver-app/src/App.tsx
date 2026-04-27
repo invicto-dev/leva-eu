@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import ActiveRidePage from './pages/ActiveRidePage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = !!localStorage.getItem('@LevaEu:token');
@@ -17,6 +18,14 @@ function App() {
           element={
             <PrivateRoute>
               <HomePage />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/active-ride" 
+          element={
+            <PrivateRoute>
+              <ActiveRidePage />
             </PrivateRoute>
           } 
         />

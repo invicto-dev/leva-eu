@@ -72,6 +72,8 @@ model Ride {
   customerId  String
   customer    Customer   @relation(fields: [customerId], references: [id])
   createdAt   DateTime   @default(now())
+  acceptedAt  DateTime?
+  finishedAt  DateTime?
   updatedAt   DateTime   @updatedAt
 
   @@map("rides")
