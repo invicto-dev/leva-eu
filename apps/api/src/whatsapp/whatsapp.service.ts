@@ -1,4 +1,11 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  forwardRef,
+} from '@nestjs/common';
+import { Prisma } from '@leva-eu/db';
 import { Client, LocalAuth, Message } from 'whatsapp-web.js';
 import * as qrcode from 'qrcode-terminal';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,6 +18,7 @@ export class WhatsappService implements OnApplicationBootstrap {
 
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => RidesService))
     private ridesService: RidesService,
   ) {
     this.client = new Client({
@@ -66,6 +74,16 @@ export class WhatsappService implements OnApplicationBootstrap {
   private async sendReply(msg: Message, text: string) {
     await this.logMessage(msg.from, text, 'SENT');
     return msg.reply(text);
+  }
+
+  public async sendProactiveMessage(to: string, body: string) {
+    try {
+      this.logger.log(`Enviando mensagem proativa para ${to}`);
+      await this.logMessage(to, body, 'SENT');
+      await this.client.sendMessage(to, body);
+    } catch (err) {
+      this.logger.error(`Falha ao enviar mensagem proativa para ${to}`, err);
+    }
   }
 
   public async handleIncomingMessage(msg: {
@@ -196,12 +214,14 @@ export class WhatsappService implements OnApplicationBootstrap {
       where: { customerId },
       update: {
         step: step as never,
-        tempData: tempData ? (tempData as Record<string, unknown>) : undefined,
+        tempData: tempData
+          ? (tempData as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
       create: {
         customerId,
         step: step as never,
-        tempData: (tempData as Record<string, unknown>) || {},
+        tempData: tempData ? (tempData as Prisma.InputJsonValue) : {},
       },
     });
   }
