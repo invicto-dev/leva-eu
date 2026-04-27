@@ -17,8 +17,13 @@ export class LogCleanupService implements OnModuleInit {
   }
 
   async cleanupLogs() {
-    const retentionDays = this.configService.get<number>('MESSAGE_LOG_RETENTION_DAYS', 30);
-    this.logger.log(`Iniciando limpeza de logs (retenção: ${retentionDays} dias)`);
+    const retentionDays = this.configService.get<number>(
+      'MESSAGE_LOG_RETENTION_DAYS',
+      30,
+    );
+    this.logger.log(
+      `Iniciando limpeza de logs (retenção: ${retentionDays} dias)`,
+    );
 
     const thresholdDate = new Date();
     thresholdDate.setDate(thresholdDate.getDate() - retentionDays);

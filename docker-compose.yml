@@ -1,26 +1,26 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: core_postgres
+    container_name: leva_eu_postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USER:-admin}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-admin_password}
-      POSTGRES_DB: ${DB_NAME:-core_db}
+      POSTGRES_DB: ${DB_NAME:-leva_eu_db}
     ports:
       - "5432:5432"
     volumes:
-      - core_postgres_data:/var/lib/postgresql/data
+      - leva_eu_postgres_data:/var/lib/postgresql/data
     healthcheck:
       test:
-        ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin} -d ${DB_NAME:-core_db}"]
+        ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin} -d ${DB_NAME:-leva_eu_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   minio:
     image: minio/minio
-    container_name: core_minio
+    container_name: leva_eu_minio
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -29,7 +29,7 @@ services:
       MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY:-admin_password}
     command: server /data --console-address ":9001"
     volumes:
-      - core_minio_data:/data
+      - leva_eu_minio_data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 5s
@@ -38,7 +38,7 @@ services:
 
   minio-init:
     image: minio/mc
-    container_name: core_minio_init
+    container_name: leva_eu_minio_init
     depends_on:
       minio:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: core_api
+    container_name: leva_eu_api
     depends_on:
       postgres:
         condition: service_healthy
@@ -78,7 +78,7 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_API_URL: ${API_URL:-/api/v1}
-    container_name: core_web
+    container_name: leva_eu_web
     depends_on:
       - api
     ports:
@@ -86,5 +86,5 @@ services:
     restart: always
 
 volumes:
-  core_postgres_data:
-  core_minio_data:
+  leva_eu_postgres_data:
+  leva_eu_minio_data:
